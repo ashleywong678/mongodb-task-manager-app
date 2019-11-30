@@ -6,41 +6,43 @@ const connectionURL = 'mongodb://127.0.0.1:27017'
 const databaseName = 'task-manager'
 
 
-MongoClient.connect(connectionURL, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
+MongoClient.connect(connectionURL, { useNewUrlParser: true }, (error, client) => {
     if (error) {
         return console.log('Unable to connect to database.')
     }
-
+    
     const db = client.db(databaseName)
-
-    // db.collection('users').findOne({ _id: 'Jen' }, (error, user) => {
-    //     if (error){
-    //         return console.log('Unable to fetch')
+    
+    // const updatePromise = db.collection('users').updateOne({
+    //     _id: new ObjectID("5de1d06f82de0d62ce6cee0b")
+    // }, {
+    //     $set: {
+    //         name: 'Sara'
     //     }
-    //     console.log(user)
-    // })
-
-    // db.collection('users').find({ age: 27 }).toArray((error, users) =>{
-    //     console.log(users)
     // })
     
-    // Challenge: Use find and findOne with tasks
-    // 1. use findOne to fetch the last task by its id (print doc to console)
-    // 2. use find to fetch all tasks that are not completed (print docs to console)
-    // 3. test  your work
+    // updatePromise.then((result) => {
+    //     console.log(result)
+    // }).catch((error) => {
+    //     console.log(error)
+    // })
     
-    db.collection('tasks').findOne({ _id: new ObjectID('5de16011b55e4944a2cc3c97') }, (error, user) => {
-        if (error){
-            return console.log('Unable to fetch')
-        }
-        console.log(user)
-    })
+    // Challenge: Use updateMany to complete all tasks
+    // 1. Check the documentation for updateMany
+    // 2. Setup the call with the query and the updates
+    // 3.use promise methods to setup the success/error handlers
+    // 4. test work
     
-    db.collection('tasks').find({ completed: false }).toArray((error, user) => {
-        if (error){
-            return console.log('Unable to fetch')
+    db.collection('tasks').updateMany({
+        completed: true
+    }, {
+        $set: {
+            completed: false
         }
-        console.log(user)
+    }).then((result) => {
+        console.log(result.modifiedCount)
+    }).catch((error) => {
+        console.log(error)
     })
     
 })
