@@ -1,17 +1,31 @@
 require('../src/db/mongoose')
-const User = require('../src/models/user')
+const Task = require('../src/models/task')
 
+// Task.findByIdAndDelete('5de3048ede68bd7bcbaaab23').then((task) => {
+//     console.log(task)
+//     return Task.countDocuments({ completed : false })
+// }).then((result) => {
+//     console.log(result)
+// }).catch((error) => {
+//     console.log(error)
+// })
 
-// Challenge: Mess around with promise chaining
+// Challenge: Use asynch/await
+// 1. create deleteTaskAndCount as an async function
+//     - accept id of task to remove
+// 2. use await to delete task and count up incomplete tasks
+// 3. return the count
+// 4. call the function and attach then/catch to log results
+// 5. test work
 
-// 1. create promise-chaining-2.js
-// 2. Load in mongoose and task model
-// 3. remove a given task by id
-// 4. get and print the total number of incomplete tasks
-// 5. test work!
+const deleteTaskAndCount = async (id) => {
+    const task = await Task.findByIdAndDelete(id)
+    const count = await Task.countDocuments({ completed: false })
+    return count
+}
 
-User.findByIdAndDelete('5de463c0b063880eb6a48d8d').then((user) => {
-    return console.log(user)
+deleteTaskAndCount('5de3048ede68bd7bcbaaab23').then((count) => {
+    console.log(count)
 }).catch((error) => {
     console.log(error)
 })
