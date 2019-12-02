@@ -56,11 +56,6 @@ app.post('/tasks', (req, res) => {
     })
 })
 
-// Challenge: Setup the task reading endpoints
-// 1. Create an endpoint for fetching all tasks
-// 2. Create an endpoint for fetchign as task by its id
-// 3. Setup new requests in Postman and test work
-
 // read all tasks
 app.get('/tasks', (req, res) => {
     Task.find({}).then((tasks) => {
