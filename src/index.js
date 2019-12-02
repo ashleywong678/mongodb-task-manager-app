@@ -48,12 +48,15 @@ app.get('/users/:id', async (req, res) => {
     }
 })
 
+//update a user by id
 app.patch('/users/:id', async (req, res) => {
     const updates = Objects.keys(req.body)
     const allowedUpdates = ['name', 'email', 'password', 'age']
-    const isValidOperation = updates.every((update) => {
-        return allowedUpdates.includes(update)
-    })
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    
+    if (!isValidOperation){
+        return res.status(400).send({error: 'Invalid Updates!'})
+    }
     try {
         const user = User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true})
         if (!user){
@@ -64,6 +67,20 @@ app.patch('/users/:id', async (req, res) => {
         res.status(400).send(e)
     }
 })
+
+// delete a user
+app.delete('/user/:id', async (req, res) => {
+    try {
+        const user = await User.findByIdAndDelete(req.params.id)
+        if(!user){
+            return res.status(404).send()
+        }
+        res.send(user)
+    } catch (e) {
+        res.status(500).send()
+    }
+})
+
 
 
 //
@@ -104,30 +121,44 @@ app.get('/tasks/:id', async (req, res) => {
     
 })
 
-
-// Challenge: Allow for task updates
-// 1. setup the route handler
-// 2. send error if unknown updates
-// 3. attempt to update the task
-//     -handle task not found
-//     -handle validation errors
-//     -handle success
-// 4. test work
-
+// update a task by id
 app.patch('/tasks/:id', async (req, res) => {
     const updates = Objects.keys(req.body)
     const allowedUpdates = ['description', 'completed']
-    const isValidOperation = updates.every((update) => {
-        return allowedUpdates.includes(update)
-    })
+    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
+    
+    if (!isValidOperation){
+        return res.status(400).send({error: 'Invalid Updates!'})
+    }
     try {
-        const task = Task.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true})
+        const task = await Task.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true})
         if (!task){
             return res.status(404).send()
         }
         res.send(task)
     } catch (e){
         res.status(400).send(e)
+    }
+})
+
+// Challenge: Allow for removal of tasks
+// 1. setup the endpoint handler
+// 2. attempt to delete the task by id
+//     - handle success
+//     - handle task not found
+//     - handle error
+// 3. test your work
+
+// delete a task
+app.delete('/tasks/:id', async (req, res) => {
+    try {
+        const task = await Task.findByIdAndDelete(req.params.id)
+        if(!task){
+            return res.status(404).send()
+        }
+        res.send(task)
+    } catch (e) {
+        res.status(500).send()
     }
 })
 
