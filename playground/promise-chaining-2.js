@@ -10,13 +10,7 @@ const Task = require('../src/models/task')
 //     console.log(error)
 // })
 
-// Challenge: Use asynch/await
-// 1. create deleteTaskAndCount as an async function
-//     - accept id of task to remove
-// 2. use await to delete task and count up incomplete tasks
-// 3. return the count
-// 4. call the function and attach then/catch to log results
-// 5. test work
+
 
 const deleteTaskAndCount = async (id) => {
     const task = await Task.findByIdAndDelete(id)
