@@ -48,10 +48,25 @@ app.get('/users/:id', async (req, res) => {
     }
 })
 
-// Challenge; Refactor task routes to use async/await
-// 1. refactor task routes to use async/await
-// 2. test all routes with postman
+app.patch('/users/:id', async (req, res) => {
+    const updates = Objects.keys(req.body)
+    const allowedUpdates = ['name', 'email', 'password', 'age']
+    const isValidOperation = updates.every((update) => {
+        return allowedUpdates.includes(update)
+    })
+    try {
+        const user = User.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true})
+        if (!user){
+            return res.status(404).send()
+        }
+        res.send(user)
+    } catch (e) {
+        res.status(400).send(e)
+    }
+})
 
+
+//
 //create a task
 app.post('/tasks', async (req, res) => {
     const task = new Task(req.body)
@@ -88,6 +103,34 @@ app.get('/tasks/:id', async (req, res) => {
     }
     
 })
+
+
+// Challenge: Allow for task updates
+// 1. setup the route handler
+// 2. send error if unknown updates
+// 3. attempt to update the task
+//     -handle task not found
+//     -handle validation errors
+//     -handle success
+// 4. test work
+
+app.patch('/tasks/:id', async (req, res) => {
+    const updates = Objects.keys(req.body)
+    const allowedUpdates = ['description', 'completed']
+    const isValidOperation = updates.every((update) => {
+        return allowedUpdates.includes(update)
+    })
+    try {
+        const task = Task.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true})
+        if (!task){
+            return res.status(404).send()
+        }
+        res.send(task)
+    } catch (e){
+        res.status(400).send(e)
+    }
+})
+
 
 app.listen(port, () => {
     console.log('Server is up ' + port)
