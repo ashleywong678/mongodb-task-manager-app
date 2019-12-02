@@ -54,11 +54,6 @@ const User = mongoose.model('User', {
 // me.save().then((response) => console.log(response)).catch((error) => console.log('Error: ', error))
 
 
-// Challenge: Add validation and sanitation to task
-// 1. trim the description and make it required
-// 2. make completed optional and default it to false
-// 3. test work
-
 const Task = mongoose.model('Task', {
     description: {
         type: String,
