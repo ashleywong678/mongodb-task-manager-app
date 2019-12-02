@@ -44,6 +44,7 @@ app.get('/users/:id', (req, res) => {
     })
 })
 
+//create a task
 app.post('/tasks', (req, res) => {
     const task = new Task(req.body)
     
@@ -52,6 +53,34 @@ app.post('/tasks', (req, res) => {
     }).catch((error) => {
         res.status(400)
         res.send(error)
+    })
+})
+
+// Challenge: Setup the task reading endpoints
+// 1. Create an endpoint for fetching all tasks
+// 2. Create an endpoint for fetchign as task by its id
+// 3. Setup new requests in Postman and test work
+
+// read all tasks
+app.get('/tasks', (req, res) => {
+    Task.find({}).then((tasks) => {
+        res.send(tasks)
+    }).catch((error) => {
+        res.status(500)
+        .send(error)
+    })  
+})
+
+// read single task
+app.get('/tasks/:id', (req, res) => {
+    const _id = req.params.id
+    Task.findById(_id).then((task) => {
+        if(!task){
+            return res.status(404).send()
+        }
+        res.send(task)
+    }).catch((error) => {
+        res.status(500).send(error)
     })
 })
 
