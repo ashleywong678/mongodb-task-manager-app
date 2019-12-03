@@ -21,7 +21,7 @@ router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
-        res.send({ user, token })
+        res.send({ user , token })
     } catch (error) {
         res.status(400).send()
     }
@@ -40,13 +40,7 @@ router.post('/users/logout', auth, async (req, res) => {
     }
 })
 
-// Challenge: Create a way to logout of all sessions
-// 1. setup POST /users/logoutall
-// 2. create the router handler to wipe the tokens array
-//     - send 200 or 500
-// 3. test work
-//     - login a few times and longout of all check db
-
+// logout all sessions
 router.post('/users/logoutall', auth, async (req, res) => {
     try {
         req.user.tokens = []
@@ -63,24 +57,14 @@ router.get('/users/me', auth, async (req, res) => {
     res.send(req.user)
 })
 
-//get a single user
-router.get('/users/:id', async (req, res) => {
-    const _id = req.params.id
-    
-    try{
-        const user = await User.findById(_id)
-        
-        if(!user){
-            return res.status(404).send()
-        }
-        res.send(user)
-    } catch (e) {
-        res.status(500).send()
-    }
-})
+// Challenge: refactor the update profile route
+// 1. update the url to users/me
+// 2. add the authentication middleware into the mix
+// 3. use the existing user document instead of fetching via param id
+// 4. test work in postman
 
-//update a user by id
-router.patch('/users/:id', async (req, res) => {
+//update own profile
+router.patch('/users/me', auth, async (req, res) => {
     const updates = Objects.keys(req.body)
     const allowedUpdates = ['name', 'email', 'password', 'age']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -89,28 +73,20 @@ router.patch('/users/:id', async (req, res) => {
         return res.status(400).send({error: 'Invalid Updates!'})
     }
     try {
-        const user = await User.findById(req.params.id)
+        updates.forEach((update) => req.user[update] = req.body[update])
+        await req.user.save()
         
-        updates.forEach((update) => user[update] = req.body[update])
-        await user.save()
-        
-        if (!user){
-            return res.status(404).send()
-        }
-        res.send(user)
+        res.send(req.user)
     } catch (e) {
         res.status(400).send(e)
     }
 })
 
 // delete a user
-router.delete('/user/:id', async (req, res) => {
+router.delete('/user/me', auth, async (req, res) => {
     try {
-        const user = await User.findByIdAndDelete(req.params.id)
-        if(!user){
-            return res.status(404).send()
-        }
-        res.send(user)
+        await req.user.remove()
+        res.send(req.user)
     } catch (e) {
         res.status(500).send()
     }
