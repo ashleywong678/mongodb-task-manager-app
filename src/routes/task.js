@@ -41,11 +41,6 @@ router.get('/tasks/:id', async (req, res) => {
     
 })
 
-// Challenge: Change how tasks are updated
-// 1. find the task
-// 2. alter the task
-// 3. save the task
-// 4. test work by updating in postman
 
 // update a task by id
 router.patch('/tasks/:id', async (req, res) => {
