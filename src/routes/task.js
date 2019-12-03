@@ -73,11 +73,16 @@ router.patch('/tasks/:id', auth, async (req, res) => {
     }
 })
 
+// Challenge: Refactor DELETE /tasks/:id
+// 1. add auth
+// 2. find the task by _id/owner (findOneAndDelete)
+// 3. test work
+
 
 // delete a task
-router.delete('/tasks/:id', async (req, res) => {
+router.delete('/tasks/:id', auth, async (req, res) => {
     try {
-        const task = await Task.findByIdAndDelete(req.params.id)
+        const task = await Task.findOneAndDelete({ _id: req.params.id, ownder: req.user._id })
         if(!task){
             return res.status(404).send()
         }
