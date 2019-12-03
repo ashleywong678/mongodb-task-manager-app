@@ -1,12 +1,17 @@
 const express = require('express')
 const router = new express.Router()
+const auth = require('../middleware/auth')
 const user = require('../models/task')
 
 
 
 //create a task
-router.post('/tasks', async (req, res) => {
-    const task = new Task(req.body)
+router.post('/tasks', auth, async (req, res) => {
+    // const task = new Task(req.body)
+    const task = new Task ({
+        ...req.body, 
+        owner: req.user._id
+    })
     
     try {
         await task.save()
@@ -16,10 +21,15 @@ router.post('/tasks', async (req, res) => {
     }
 })
 
+// Challenge: Refactor GET /tasks
+// 1. add authentication
+// 2. return tasks only for the authenticated user
+// 3. test work
+
 // read all tasks
-router.get('/tasks', async (req, res) => {
+router.get('/tasks', auth, async (req, res) => {
     try {
-        const tasks = await Task.find({})
+        const tasks = await Task.find({ owner: req.user._id })
         res.send(tasks)
     } catch (e) {
         res.status(500).send()
@@ -27,14 +37,16 @@ router.get('/tasks', async (req, res) => {
 })
 
 // read single task
-router.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', auth, async (req, res) => {
     const _id = req.params.id
     
     try {
-        const task = Task.findById(_id)
+        const task = await Task.findOne({ _id, owner: req.user._id })
+        
         if (!task) {
             return res.status(404).send()
         }
+        res.send(task)
     } catch (e) {
         res.status(500).send()
     }
