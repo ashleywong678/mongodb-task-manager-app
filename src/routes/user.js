@@ -1,9 +1,9 @@
 const express = require('express')
-const user = require('../models/user')
+const User = require('../models/user')
 const auth = require('../middleware/auth')
 const router = new express.Router()
 
-//create a new user
+//create a new user (signup)
 router.post('/users', async (req, res) => {
     const user = new User(req.body)
     
@@ -16,7 +16,7 @@ router.post('/users', async (req, res) => {
     }
 })
 
-
+// login route
 router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
@@ -26,6 +26,37 @@ router.post('/users/login', async (req, res) => {
         res.status(400).send()
     }
 })
+
+// login route
+router.post('/users/logout', auth, async (req, res) => {
+    try {
+      req.user.tokens = req.users.tokens.filter((token) => {
+          return token.token !== req.token
+      })
+      await req.user.save()
+      res.send()
+    } catch (e) {
+        res.status(500).send()
+    }
+})
+
+// Challenge: Create a way to logout of all sessions
+// 1. setup POST /users/logoutall
+// 2. create the router handler to wipe the tokens array
+//     - send 200 or 500
+// 3. test work
+//     - login a few times and longout of all check db
+
+router.post('/users/logoutall', auth, async (req, res) => {
+    try {
+        req.user.tokens = []
+        await req.user.save()
+        res.send()
+    } catch (e) {
+        res.status(500).send()
+    }
+})
+
 
 //get all users
 router.get('/users/me', auth, async (req, res) => {
