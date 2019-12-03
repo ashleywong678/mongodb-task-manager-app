@@ -41,6 +41,12 @@ router.get('/tasks/:id', async (req, res) => {
     
 })
 
+// Challenge: Change how tasks are updated
+// 1. find the task
+// 2. alter the task
+// 3. save the task
+// 4. test work by updating in postman
+
 // update a task by id
 router.patch('/tasks/:id', async (req, res) => {
     const updates = Objects.keys(req.body)
@@ -51,7 +57,11 @@ router.patch('/tasks/:id', async (req, res) => {
         return res.status(400).send({error: 'Invalid Updates!'})
     }
     try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true})
+        const task = await Task.findById(req.params.id)
+        
+        updates.forEach(update => task[update] = req.body[update])
+        await user.save()
+        
         if (!task){
             return res.status(404).send()
         }
