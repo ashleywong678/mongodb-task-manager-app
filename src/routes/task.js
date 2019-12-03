@@ -5,7 +5,7 @@ const user = require('../models/task')
 
 
 //create a task
-app.post('/tasks', async (req, res) => {
+router.post('/tasks', async (req, res) => {
     const task = new Task(req.body)
     
     try {
@@ -17,7 +17,7 @@ app.post('/tasks', async (req, res) => {
 })
 
 // read all tasks
-app.get('/tasks', async (req, res) => {
+router.get('/tasks', async (req, res) => {
     try {
         const tasks = await Task.find({})
         res.send(tasks)
@@ -27,7 +27,7 @@ app.get('/tasks', async (req, res) => {
 })
 
 // read single task
-app.get('/tasks/:id', async (req, res) => {
+router.get('/tasks/:id', async (req, res) => {
     const _id = req.params.id
     
     try {
@@ -42,7 +42,7 @@ app.get('/tasks/:id', async (req, res) => {
 })
 
 // update a task by id
-app.patch('/tasks/:id', async (req, res) => {
+router.patch('/tasks/:id', async (req, res) => {
     const updates = Objects.keys(req.body)
     const allowedUpdates = ['description', 'completed']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -63,7 +63,7 @@ app.patch('/tasks/:id', async (req, res) => {
 
 
 // delete a task
-app.delete('/tasks/:id', async (req, res) => {
+router.delete('/tasks/:id', async (req, res) => {
     try {
         const task = await Task.findByIdAndDelete(req.params.id)
         if(!task){
