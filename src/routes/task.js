@@ -21,11 +21,6 @@ router.post('/tasks', auth, async (req, res) => {
     }
 })
 
-// Challenge: Refactor GET /tasks
-// 1. add authentication
-// 2. return tasks only for the authenticated user
-// 3. test work
-
 // read all tasks
 router.get('/tasks', auth, async (req, res) => {
     try {
@@ -55,7 +50,7 @@ router.get('/tasks/:id', auth, async (req, res) => {
 
 
 // update a task by id
-router.patch('/tasks/:id', async (req, res) => {
+router.patch('/tasks/:id', auth, async (req, res) => {
     const updates = Objects.keys(req.body)
     const allowedUpdates = ['description', 'completed']
     const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
@@ -64,14 +59,14 @@ router.patch('/tasks/:id', async (req, res) => {
         return res.status(400).send({error: 'Invalid Updates!'})
     }
     try {
-        const task = await Task.findById(req.params.id)
-        
-        updates.forEach(update => task[update] = req.body[update])
-        await user.save()
+        const task = await Task.findById({ _id: req.params.id, owner: req.user._id })
         
         if (!task){
             return res.status(404).send()
         }
+        
+        updates.forEach(update => task[update] = req.body[update])
+        await user.save()
         res.send(task)
     } catch (e){
         res.status(400).send(e)
