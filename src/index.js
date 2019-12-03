@@ -12,76 +12,11 @@ app.use(express.json())
 app.use(userRouter)
 
 
-//create a task
-app.post('/tasks', async (req, res) => {
-    const task = new Task(req.body)
-    
-    try {
-        await task.save()
-        res.sendStatus(201).send(task)
-    } catch (e) {
-        res.status(400).send()
-    }
-})
-
-// read all tasks
-app.get('/tasks', async (req, res) => {
-    try {
-        const tasks = await Task.find({})
-        res.send(tasks)
-    } catch (e) {
-        res.status(500).send()
-    }    
-})
-
-// read single task
-app.get('/tasks/:id', async (req, res) => {
-    const _id = req.params.id
-    
-    try {
-        const task = Task.findById(_id)
-        if (!task) {
-            return res.status(404).send()
-        }
-    } catch (e) {
-        res.status(500).send()
-    }
-    
-})
-
-// update a task by id
-app.patch('/tasks/:id', async (req, res) => {
-    const updates = Objects.keys(req.body)
-    const allowedUpdates = ['description', 'completed']
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update))
-    
-    if (!isValidOperation){
-        return res.status(400).send({error: 'Invalid Updates!'})
-    }
-    try {
-        const task = await Task.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true})
-        if (!task){
-            return res.status(404).send()
-        }
-        res.send(task)
-    } catch (e){
-        res.status(400).send(e)
-    }
-})
-
-
-// delete a task
-app.delete('/tasks/:id', async (req, res) => {
-    try {
-        const task = await Task.findByIdAndDelete(req.params.id)
-        if(!task){
-            return res.status(404).send()
-        }
-        res.send(task)
-    } catch (e) {
-        res.status(500).send()
-    }
-})
+// Challenge: Create a task router
+// 1. create new file the creates/exports new router
+// 2. move all the task routes over
+// 3. load in and use that router with the express app
+// 4. test your work
 
 
 app.listen(port, () => {
